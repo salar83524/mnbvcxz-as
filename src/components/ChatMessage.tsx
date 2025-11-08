@@ -4,6 +4,8 @@ import { Copy, Pencil, Trash2, Check, User, Bot } from 'lucide-react';
 import { useToast } from './ui/use-toast';
 import { Textarea } from './ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
+import { PDFViewer } from './PDFViewer';
+import ReactMarkdown from 'react-markdown';
 
 interface ChatMessageProps {
   id: string;
@@ -20,6 +22,31 @@ const ChatMessage = ({ id, role, content, imageUrl, onUpdate }: ChatMessageProps
   const [showActions, setShowActions] = useState(false);
   const { toast } = useToast();
   const isUser = role === 'user';
+
+  // Extract PDF links from markdown content
+  const extractPDFLinks = (text: string) => {
+    const pdfRegex = /\[([^\]]+)\]\((https?:\/\/[^\s\)]+\.pdf[^\)]*)\)/gi;
+    const matches = [];
+    let match;
+    
+    while ((match = pdfRegex.exec(text)) !== null) {
+      matches.push({
+        title: match[1],
+        url: match[2],
+        fullMatch: match[0]
+      });
+    }
+    
+    return matches;
+  };
+
+  const pdfLinks = extractPDFLinks(content);
+  
+  // Remove PDF links from content for cleaner display
+  const contentWithoutPDFs = pdfLinks.reduce(
+    (text, pdf) => text.replace(pdf.fullMatch, ''),
+    content
+  );
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content);
@@ -159,10 +186,40 @@ const ChatMessage = ({ id, role, content, imageUrl, onUpdate }: ChatMessageProps
                 ? 'gradient-primary text-primary-foreground ring-2 ring-primary/20' 
                 : 'bg-gradient-to-br from-card via-card to-muted/30 border-2 border-border/60 backdrop-blur-sm'
             }`}>
-              <p className="whitespace-pre-wrap break-words text-sm md:text-base leading-relaxed">
-                {content}
-              </p>
+              <div className="whitespace-pre-wrap break-words text-sm md:text-base leading-relaxed prose prose-sm max-w-none dark:prose-invert">
+                <ReactMarkdown
+                  components={{
+                    a: ({ node, ...props }) => (
+                      <a
+                        {...props}
+                        className="text-primary hover:text-primary/80 underline font-medium transition-colors"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    ),
+                    p: ({ node, ...props }) => <p {...props} className="mb-2" />,
+                    h3: ({ node, ...props }) => <h3 {...props} className="text-lg font-bold mt-4 mb-2" />,
+                    strong: ({ node, ...props }) => <strong {...props} className="font-bold text-foreground" />,
+                  }}
+                >
+                  {contentWithoutPDFs}
+                </ReactMarkdown>
+              </div>
             </div>
+            
+            {/* PDF Viewers */}
+            {!isUser && pdfLinks.length > 0 && (
+              <div className="space-y-4 mt-4">
+                {pdfLinks.map((pdf, index) => (
+                  <PDFViewer
+                    key={index}
+                    url={pdf.url}
+                    fileName={pdf.title}
+                    title={pdf.title}
+                  />
+                ))}
+              </div>
+            )}
             
             {showActions && (
               <div className={`flex gap-1 md:gap-2 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-in fade-in zoom-in`}>

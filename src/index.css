@@ -243,6 +243,40 @@ All colors MUST be HSL.
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   
+  /* Markdown prose styling */
+  .prose {
+    max-width: 100%;
+  }
+  
+  .prose p {
+    margin-bottom: 0.75rem;
+  }
+  
+  .prose h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .prose strong {
+    font-weight: 700;
+  }
+  
+  .prose a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+  
+  .prose a:hover {
+    color: hsl(var(--primary) / 0.8);
+  }
+  
+  .dark .prose-invert a {
+    color: hsl(var(--primary));
+  }
+  
   @keyframes fade-in {
     from {
       opacity: 0;

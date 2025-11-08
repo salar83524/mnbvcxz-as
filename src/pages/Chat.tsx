@@ -5,6 +5,8 @@ import ChatSidebar from '@/components/ChatSidebar';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
 import AdDisplay from '@/components/AdDisplay';
+import { ChatStats } from '@/components/ChatStats';
+import { QuickActions } from '@/components/QuickActions';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -362,6 +364,11 @@ const Chat = () => {
         {/* Messages Area - Full Height */}
         <ScrollArea className="flex-1 min-h-0 max-h-full relative z-0">
           <div className="max-w-6xl mx-auto px-3 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 min-h-full">
+            {/* Stats - Show only when there are messages */}
+            {messages.length > 0 && (
+              <ChatStats conversationId={currentConversationId} />
+            )}
+            
             {/* Top Advertisement */}
             <AdDisplay position="chat_top" />
             {messages.length === 0 ? (
@@ -373,26 +380,31 @@ const Chat = () => {
                   به چت AS خوش آمدید!
                 </h2>
                 <p className="text-base md:text-lg text-muted-foreground max-w-2xl mb-10 leading-relaxed animate-in slide-in-from-bottom-4" style={{animationDelay: '400ms'}}>
-                  با قابلیت جستجو، تحلیل تصاویر و دسترسی به منابع آموزشی
+                  با قابلیت جستجو، تحلیل تصاویر، دسترسی به منابع و دانلود مستقیم فایل‌ها
                 </p>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl w-full mb-8">
+                {/* Quick Actions */}
+                <div className="w-full max-w-4xl mb-8">
+                  <QuickActions onActionClick={handleSendMessage} />
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl w-full mb-8">
                   <div className="group p-6 rounded-2xl border-2 border-border/50 bg-gradient-to-br from-card to-card/50 backdrop-blur hover:border-primary/50 transition-all hover:shadow-xl hover:scale-105 cursor-pointer animate-in fade-in slide-in-from-bottom-4" style={{animationDelay: '600ms'}}>
                     <Search className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="font-bold mb-2">جستجوی هوشمند</h3>
-                    <p className="text-sm text-muted-foreground">جستجو در منابع و کتب دانشگاه پیام نور</p>
+                    <p className="text-sm text-muted-foreground">جستجو در منابع و کتب</p>
                   </div>
                   
                   <div className="group p-6 rounded-2xl border-2 border-border/50 bg-gradient-to-br from-card to-card/50 backdrop-blur hover:border-primary/50 transition-all hover:shadow-xl hover:scale-105 cursor-pointer animate-in fade-in slide-in-from-bottom-4" style={{animationDelay: '700ms'}}>
                     <ImageIcon className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="font-bold mb-2">تحلیل تصویر</h3>
-                    <p className="text-sm text-muted-foreground">آپلود و تحلیل سوالات و مطالب درسی</p>
+                    <p className="text-sm text-muted-foreground">آپلود و تحلیل سوالات</p>
                   </div>
                   
-                  <div className="group p-6 rounded-2xl border-2 border-border/50 bg-gradient-to-br from-card to-card/50 backdrop-blur hover:border-primary/50 transition-all hover:shadow-xl hover:scale-105 cursor-pointer animate-in fade-in slide-in-from-bottom-4 sm:col-span-2 lg:col-span-1" style={{animationDelay: '800ms'}}>
-                    <MessageSquare className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="font-bold mb-2">پاسخ هوشمند</h3>
-                    <p className="text-sm text-muted-foreground">دریافت پاسخ دقیق و جامع به سوالات</p>
+                  <div className="group p-6 rounded-2xl border-2 border-border/50 bg-gradient-to-br from-card to-card/50 backdrop-blur hover:border-primary/50 transition-all hover:shadow-xl hover:scale-105 cursor-pointer animate-in fade-in slide-in-from-bottom-4" style={{animationDelay: '800ms'}}>
+                    <BookOpen className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="font-bold mb-2">دانلود سریع</h3>
+                    <p className="text-sm text-muted-foreground">دریافت فوری فایل‌ها</p>
                   </div>
                 </div>
 
@@ -400,26 +412,18 @@ const Chat = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleSendMessage("چگونه می‌توانم در امتحانات بهتر عمل کنم؟")}
+                    onClick={() => handleSendMessage("کتاب‌های موجود را نمایش بده")}
                     className="text-xs hover:bg-primary/10 hover:border-primary/50 transition-all"
                   >
-                    💡 نکات امتحانی
+                    📚 نمایش کتاب‌ها
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleSendMessage("منابع درسی رشته کامپیوتر را معرفی کن")}
+                    onClick={() => handleSendMessage("نمونه سوالات امتحانی چیست؟")}
                     className="text-xs hover:bg-primary/10 hover:border-primary/50 transition-all"
                   >
-                    📚 منابع درسی
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSendMessage("برنامه مطالعاتی موثر چگونه است؟")}
-                    className="text-xs hover:bg-primary/10 hover:border-primary/50 transition-all"
-                  >
-                    📅 برنامه مطالعه
+                    📝 نمونه سوالات
                   </Button>
                 </div>
               </div>
