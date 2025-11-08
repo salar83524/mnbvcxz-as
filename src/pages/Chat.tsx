@@ -308,62 +308,60 @@ const Chat = () => {
           <div className="absolute bottom-0 -left-4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}} />
         </div>
 
-        {/* Header */}
-        <header className="relative border-b border-border/50 backdrop-blur-xl bg-card/80 shadow-lg z-10 shrink-0">
-          <div className="p-3 md:p-4 flex justify-between items-center">
-            <div className="flex items-center gap-2 md:gap-4">
+        {/* Modern Compact Header */}
+        <header className="relative border-b border-border/50 backdrop-blur-xl bg-card/90 shadow-md z-10 shrink-0">
+          <div className="p-2.5 md:p-3 flex justify-between items-center">
+            <div className="flex items-center gap-2 md:gap-3">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden hover:bg-primary/10"
+                className="lg:hidden hover:bg-primary/10 transition-smooth h-9 w-9"
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4" />
               </Button>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-                  <span className="text-white font-bold text-lg md:text-xl font-decorative">AS</span>
-                </div>
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl gradient-primary flex items-center justify-center shadow-md transition-smooth hover:scale-105">
+                <span className="text-white font-bold text-base md:text-lg font-decorative">AS</span>
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 onClick={() => navigate('/news')}
-                className="transition-spring hover:scale-105"
+                className="hover:bg-primary/10 transition-smooth h-9 w-9"
                 title="اخبار"
               >
-                <Newspaper className="w-5 h-5" />
+                <Newspaper className="w-4 h-4" />
               </Button>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 onClick={() => navigate('/materials')}
-                className="transition-spring hover:scale-105"
+                className="hover:bg-primary/10 transition-smooth h-9 w-9"
                 title="مواد آموزشی"
               >
-                <BookOpen className="w-5 h-5" />
+                <BookOpen className="w-4 h-4" />
               </Button>
               <Button
                 variant="outline"
                 onClick={exportToPDF}
                 disabled={messages.length === 0}
-                className="gap-1.5 text-xs shadow-md hover:shadow-lg transition-all"
+                className="gap-1.5 text-xs hover:bg-primary/10 transition-smooth h-9 px-3"
                 size="sm"
               >
                 <FileDown className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">خروجی PDF</span>
+                <span className="hidden sm:inline">PDF</span>
               </Button>
             </div>
           </div>
           
         </header>
 
-        {/* Messages Area */}
+        {/* Messages Area - Full Height */}
         <ScrollArea className="flex-1 min-h-0 max-h-full relative z-0">
-          <div className="max-w-5xl mx-auto px-3 md:px-6 py-6 space-y-4 md:space-y-6 min-h-full">
+          <div className="max-w-6xl mx-auto px-3 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 min-h-full">
             {/* Top Advertisement */}
             <AdDisplay position="chat_top" />
             {messages.length === 0 ? (
@@ -455,12 +453,14 @@ const Chat = () => {
           </div>
         </ScrollArea>
 
-        {/* Input Area */}
-        <footer className="relative border-t border-border/50 backdrop-blur-xl bg-card/80 shrink-0 shadow-2xl z-10">
-          <ChatInput
-            onSendMessage={handleSendMessage}
-            loading={loading}
-          />
+        {/* Modern Input Area */}
+        <footer className="relative border-t border-border/50 backdrop-blur-xl bg-card/90 shrink-0 shadow-lg z-10">
+          <div className="max-w-6xl mx-auto">
+            <ChatInput
+              onSendMessage={handleSendMessage}
+              loading={loading}
+            />
+          </div>
         </footer>
       </div>
     </div>

@@ -18,7 +18,7 @@ interface FileUploadProps {
 export const FileUpload = ({ 
   bucket, 
   accept = 'image/*,video/*', 
-  maxSize = 10,
+  maxSize = 50,
   onUploadComplete,
   currentUrl,
   label = 'آپلود فایل'
@@ -47,12 +47,13 @@ export const FileUpload = ({
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-      // Upload file
+      // Upload file with optimized settings for speed
       const { error: uploadError, data } = await supabase.storage
         .from(bucket)
         .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
+          cacheControl: '7200',
+          upsert: true,
+          contentType: file.type
         });
 
       if (uploadError) throw uploadError;

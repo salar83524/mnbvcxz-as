@@ -39,12 +39,13 @@ serve(async (req) => {
         materialsContext = '\n\n**منابع و کتاب‌های در دسترس:**\n';
         materials.forEach((material: any) => {
           const downloadLink = `${supabaseUrl}/storage/v1/object/public/educational-materials/${material.file_path}`;
-          materialsContext += `- ${material.title}`;
+          const fileName = material.file_path.split('/').pop();
+          materialsContext += `\n### 📚 ${material.title}\n`;
           if (material.description) {
-            materialsContext += `: ${material.description}`;
+            materialsContext += `**توضیحات:** ${material.description}\n`;
           }
-          materialsContext += ` (${material.category})\n`;
-          materialsContext += `  لینک دانلود: ${downloadLink}\n`;
+          materialsContext += `**دسته‌بندی:** ${material.category}\n`;
+          materialsContext += `**📥 دانلود فایل:** [کلیک کنید - ${fileName}](${downloadLink})\n`;
         });
         console.log('Loaded', materials.length, 'educational materials with download links');
       }
@@ -86,11 +87,15 @@ serve(async (req) => {
 - تحلیل تصاویر و اسناد درسی
 - ارائه پاسخ‌های جامع و آموزشی
 
-**دستورالعمل‌های مهم:**
+**دستورالعمل‌های مهم - ارسال فایل‌ها:**
 - اگر کاربر درخواست کتاب درسی، نمونه سوال، یا مواد آموزشی کرد، حتماً لیست منابع موجود را بررسی کنید
-- در صورت وجود منابع مرتبط، آن‌ها را معرفی کرده و **لینک دانلود مستقیم** آن‌ها را در پاسخ خود قرار دهید
-- لینک‌ها را به صورت کلیک‌پذیر و واضح نمایش دهید: [نام کتاب](لینک دانلود)
-- اگر منبع خاصی وجود ندارد، به کاربر اطلاع دهید که این محتوا در حال حاضر آپلود نشده است و از مدیر بخواهید آن را اضافه کند
+- در صورت وجود منابع مرتبط:
+  * آن‌ها را با فرمت زیبا معرفی کنید
+  * **حتماً لینک دانلود مستقیم فایل را در پاسخ قرار دهید**
+  * از فرمت markdown استفاده کنید: 📥 [کلیک برای دانلود - نام فایل](لینک)
+  * لینک‌ها باید کاملاً کلیک‌پذیر و واضح باشند
+  * اگر چند منبع مرتبط وجود دارد، همه را با عنوان و توضیحات نمایش دهید
+- اگر منبع خاصی وجود ندارد، به کاربر اطلاع دهید که این محتوا در حال حاضر آپلود نشده است
 - همیشه منابع دانشگاه پیام نور را در اولویت قرار دهید
 - برای سوالات تخصصی، از جستجوی وب برای یافتن منابع معتبر استفاده کنید
 - پاسخ‌ها باید دقیق، کامل و قابل فهم باشند
