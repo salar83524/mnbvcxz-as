@@ -324,11 +324,6 @@ const Chat = () => {
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
                   <span className="text-white font-bold text-lg md:text-xl font-decorative">AS</span>
                 </div>
-                <div>
-                  <h1 className="text-base md:text-xl font-bold gradient-text font-decorative">
-                    چت AS
-                  </h1>
-                </div>
               </div>
             </div>
             

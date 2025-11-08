@@ -31,19 +31,22 @@ serve(async (req) => {
 
       const { data: materials, error: materialsError } = await supabaseClient
         .from('educational_materials')
-        .select('title, description, category, tags')
-        .limit(20);
+        .select('title, description, category, tags, file_path, id')
+        .limit(50);
 
       if (!materialsError && materials && materials.length > 0) {
-        materialsContext = '\n\n**منابع در دسترس:**\n';
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+        materialsContext = '\n\n**منابع و کتاب‌های در دسترس:**\n';
         materials.forEach((material: any) => {
+          const downloadLink = `${supabaseUrl}/storage/v1/object/public/educational-materials/${material.file_path}`;
           materialsContext += `- ${material.title}`;
           if (material.description) {
             materialsContext += `: ${material.description}`;
           }
           materialsContext += ` (${material.category})\n`;
+          materialsContext += `  لینک دانلود: ${downloadLink}\n`;
         });
-        console.log('Loaded', materials.length, 'educational materials');
+        console.log('Loaded', materials.length, 'educational materials with download links');
       }
     } catch (materialsError) {
       console.log('Could not load materials:', materialsError);
@@ -85,7 +88,8 @@ serve(async (req) => {
 
 **دستورالعمل‌های مهم:**
 - اگر کاربر درخواست کتاب درسی، نمونه سوال، یا مواد آموزشی کرد، حتماً لیست منابع موجود را بررسی کنید
-- در صورت وجود منابع مرتبط، آن‌ها را معرفی کرده و به کاربر بگویید: "شما می‌توانید این فایل‌ها را از دکمه 📚 در بالای صفحه چت (مواد آموزشی) مشاهده و دانلود کنید"
+- در صورت وجود منابع مرتبط، آن‌ها را معرفی کرده و **لینک دانلود مستقیم** آن‌ها را در پاسخ خود قرار دهید
+- لینک‌ها را به صورت کلیک‌پذیر و واضح نمایش دهید: [نام کتاب](لینک دانلود)
 - اگر منبع خاصی وجود ندارد، به کاربر اطلاع دهید که این محتوا در حال حاضر آپلود نشده است و از مدیر بخواهید آن را اضافه کند
 - همیشه منابع دانشگاه پیام نور را در اولویت قرار دهید
 - برای سوالات تخصصی، از جستجوی وب برای یافتن منابع معتبر استفاده کنید
