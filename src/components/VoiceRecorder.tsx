@@ -60,35 +60,58 @@ export const VoiceRecorder = ({ onTranscription }: VoiceRecorderProps) => {
     setIsProcessing(true);
     
     try {
+      console.log('Converting audio to base64...', audioBlob.size, 'bytes');
+      
       // Convert blob to base64
       const reader = new FileReader();
       reader.readAsDataURL(audioBlob);
       
       reader.onloadend = async () => {
-        const base64Audio = reader.result?.toString().split(',')[1];
-        
-        if (!base64Audio) {
-          throw new Error('خطا در تبدیل فایل صوتی');
+        try {
+          const base64Audio = reader.result?.toString().split(',')[1];
+          
+          if (!base64Audio) {
+            throw new Error('خطا در تبدیل فایل صوتی');
+          }
+
+          console.log('Sending audio to transcription service...');
+
+          // Send to transcribe-audio edge function
+          const { data, error } = await supabase.functions.invoke('transcribe-audio', {
+            body: { audio: base64Audio }
+          });
+
+          console.log('Transcription response:', { data, error });
+
+          if (error) {
+            console.error('Transcription error:', error);
+            throw error;
+          }
+
+          if (data?.text) {
+            console.log('Transcription successful:', data.text);
+            onTranscription(data.text);
+            toast.success('✅ متن از صدا استخراج شد');
+          } else if (data?.error) {
+            throw new Error(data.error);
+          } else {
+            throw new Error('پاسخی دریافت نشد');
+          }
+        } catch (innerError: any) {
+          console.error('Inner transcription error:', innerError);
+          toast.error(innerError.message || 'خطا در تبدیل صدا به متن');
+          setIsProcessing(false);
         }
+      };
 
-        // Send to transcribe-audio edge function
-        const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-          body: { audio: base64Audio }
-        });
-
-        if (error) throw error;
-
-        if (data?.text) {
-          onTranscription(data.text);
-          toast.success('متن از صدا استخراج شد');
-        } else {
-          throw new Error('پاسخی دریافت نشد');
-        }
+      reader.onerror = () => {
+        console.error('FileReader error');
+        toast.error('خطا در خواندن فایل صوتی');
+        setIsProcessing(false);
       };
     } catch (error: any) {
       console.error('Transcription error:', error);
       toast.error(error.message || 'خطا در تبدیل صدا به متن');
-    } finally {
       setIsProcessing(false);
     }
   };

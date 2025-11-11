@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { SystemSettings } from '@/components/SystemSettings';
 import { toast } from 'sonner';
 
 const Admin = () => {
@@ -267,88 +268,10 @@ const Admin = () => {
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  تنظیمات عمومی
-                </CardTitle>
-                <CardDescription>
-                  پیکربندی تنظیمات اصلی سیستم
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="siteName">نام سایت</Label>
-                    <Input 
-                      id="siteName"
-                      value={settings.siteName}
-                      onChange={(e) => setSettings({...settings, siteName: e.target.value})}
-                      placeholder="نام سایت را وارد کنید"
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>حالت تعمیر و نگهداری</Label>
-                      <p className="text-sm text-muted-foreground">غیرفعال کردن دسترسی کاربران عادی</p>
-                    </div>
-                    <Switch 
-                      checked={settings.maintenanceMode}
-                      onCheckedChange={(checked) => setSettings({...settings, maintenanceMode: checked})}
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>ثبت‌نام کاربران جدید</Label>
-                      <p className="text-sm text-muted-foreground">مجاز بودن ثبت‌نام کاربران جدید</p>
-                    </div>
-                    <Switch 
-                      checked={settings.allowRegistration}
-                      onCheckedChange={(checked) => setSettings({...settings, allowRegistration: checked})}
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-2">
-                    <Label htmlFor="maxUpload">حداکثر حجم آپلود (مگابایت)</Label>
-                    <Input 
-                      id="maxUpload"
-                      type="number"
-                      value={settings.maxUploadSize}
-                      onChange={(e) => setSettings({...settings, maxUploadSize: parseInt(e.target.value)})}
-                    />
-                  </div>
-                </div>
-
-                <Button className="w-full md:w-auto" onClick={() => toast.success('تنظیمات ذخیره شد')}>
-                  ذخیره تنظیمات
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lock className="w-5 h-5" />
-                  تنظیمات امنیتی
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                  <p className="text-sm text-muted-foreground">
-                    برای تنظیمات امنیتی پیشرفته، از بخش پایگاه داده استفاده کنید.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <SystemSettings 
+              settings={settings}
+              onSettingsChange={setSettings}
+            />
           </TabsContent>
 
           {/* Users Tab */}

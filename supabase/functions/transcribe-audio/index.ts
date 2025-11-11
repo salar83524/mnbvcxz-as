@@ -6,6 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const LOVABLE_AI_URL = 'https://ai.gateway.lovable.dev/v1/audio/transcriptions';
+
 // Process base64 in chunks to prevent memory issues
 function processBase64Chunks(base64String: string, chunkSize = 32768) {
   const chunks: Uint8Array[] = [];
@@ -44,7 +46,8 @@ serve(async (req) => {
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+      console.error('LOVABLE_API_KEY not configured');
+      throw new Error('API key not configured');
     }
 
     const { audio } = await req.json();
@@ -53,46 +56,45 @@ serve(async (req) => {
       throw new Error('No audio data provided');
     }
 
-    console.log('Processing audio transcription...');
+    console.log('Processing audio transcription with Lovable AI...');
 
     // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio);
     
-    // Prepare form data for Whisper API via Lovable AI
+    // Prepare form data for Whisper via Lovable AI
     const formData = new FormData();
     const blob = new Blob([binaryAudio], { type: 'audio/webm' });
     formData.append('file', blob, 'audio.webm');
     formData.append('model', 'whisper-1');
     formData.append('language', 'fa'); // Persian language
 
-    // Send to Whisper API via OpenAI (you'll need OpenAI API key)
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      // Fallback message if no OpenAI key
-      return new Response(
-        JSON.stringify({ 
-          text: 'متأسفانه امکان تبدیل صوت به متن در حال حاضر وجود ندارد. لطفاً سوال خود را به صورت متنی بنویسید.' 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    console.log('Sending audio to Lovable AI Gateway...');
 
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    // Use Lovable AI Gateway for transcription
+    const response = await fetch(LOVABLE_AI_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
       },
       body: formData,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI Whisper error:', errorText);
-      throw new Error(`Transcription failed: ${response.status}`);
+      console.error('Lovable AI error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        throw new Error('محدودیت تعداد درخواست. لطفاً کمی صبر کنید.');
+      }
+      if (response.status === 402) {
+        throw new Error('اعتبار ناکافی. لطفاً اعتبار خود را شارژ کنید.');
+      }
+      
+      throw new Error(`خطا در پردازش صدا: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('Transcription successful');
+    console.log('Transcription successful:', result.text?.substring(0, 50));
 
     return new Response(
       JSON.stringify({ text: result.text }),
