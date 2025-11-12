@@ -9,6 +9,7 @@ import Chat from "./pages/Chat";
 import Materials from "./pages/Materials";
 import News from "./pages/News";
 import Admin from "./pages/Admin";
+import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/materials" element={<Materials />} />
             <Route path="/news" element={<News />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/documentation" element={<Documentation />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
